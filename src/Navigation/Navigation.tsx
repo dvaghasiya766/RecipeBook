@@ -15,7 +15,6 @@ import { Colors } from '../Utils/Colors';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useWindowDimensions } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
-// import { MaterialIcons } from "@expo/vector-icons"; // 👈 Google Material Icons
 
 export type RootStackParamList = {
   DrawerNavigation: undefined;

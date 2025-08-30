@@ -1,10 +1,14 @@
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { MEALS } from '../Data/dummy-data';
 import IconButton from '../Components/IconButton';
 import MealDetails from '../Components/MealDetails';
 import Subtitle from '../Components/Subtitle';
 import List from '../Components/List';
+import { addFavorite, removeFavorite } from '../Store/Redux/Favorites';
+import { RootState } from '../Store/Redux/Store';
+// import { FavoritesContext } from '../Store/Context/FavoritesContext';
 
 interface MealDetailScreenProps {
   route: any;
@@ -12,11 +16,28 @@ interface MealDetailScreenProps {
 }
 
 const MealDetailScreen = ({ route, navigation }: MealDetailScreenProps) => {
+  // const favoritMealsContext = useContext(FavoritesContext);
+  // const mealIsFavorite = favoritMealsContext.isFavorite(mealId);
+
   const mealId = route.params.mealId;
   const selectedMeal = MEALS.find(meal => meal.id === mealId);
 
-  const headerButtonPressHandler = () => {
-    console.log('Pressed!');
+  const favoritMealIds = useSelector(
+    (state: RootState) => state.favoriteMeals.ids,
+  );
+  const dispatch = useDispatch();
+
+  const mealIsFavorite = favoritMealIds.includes(mealId);
+  console.log('mealIsFavorite', mealIsFavorite);
+
+  const changeFavoriteStatusHandler = () => {
+    if (mealIsFavorite) {
+      // favoritMealsContext.removeFavorite(mealId);
+      dispatch(removeFavorite({ id: mealId }));
+    } else {
+      // favoritMealsContext.addFavorite(mealId);
+      dispatch(addFavorite({ id: mealId }));
+    }
   };
 
   useLayoutEffect(() => {
@@ -24,14 +45,14 @@ const MealDetailScreen = ({ route, navigation }: MealDetailScreenProps) => {
       headerRight: () => {
         return (
           <IconButton
-            icon="star"
+            icon={mealIsFavorite ? 'star' : 'star-outline'}
             color="#555"
-            onPress={headerButtonPressHandler}
+            onPress={changeFavoriteStatusHandler}
           />
         );
       },
     });
-  }, [navigation, selectedMeal]);
+  }, [navigation, changeFavoriteStatusHandler]);
 
   if (!selectedMeal) {
     return <Text>Meal not found</Text>;
